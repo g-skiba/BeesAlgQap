@@ -25,6 +25,12 @@ namespace BeesAlgQAP
                 int PROBLEM_SIZE = 5;
                 int N_BEES = 100;
 
+                // reprezentacja permutacji:
+                // [1,2,0] oznacza ze:
+                // - zerowy przedmiot stoi na pierwszym miejscu
+                // - pierwszy przedmiot stoi na drugim miejscu
+                // - drugi przedmiot stoi na zerowym miejscu
+
                 double[,] hweights = new double[PROBLEM_SIZE, PROBLEM_SIZE];    //should be symmetric
                 double[,] hdistances = new double[PROBLEM_SIZE, PROBLEM_SIZE];  //should be symmetric
                 int[,] hpermutations = new int[N_BEES, PROBLEM_SIZE];
