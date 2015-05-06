@@ -3,15 +3,35 @@ using Cudafy.Host;
 using Cudafy.Translator;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace BeesAlgQAP
 {
-    class Program
+    static class Program
     {
         public static Random random = new Random();
+
+        static int ITERATIONS_NUM = 100;
+        static int N_BEES = 100;
+        static int N_BEST_SOLUTIONS = N_BEES / 2;
+
+        static int PROBLEM_SIZE;
+        static double[,] hweights;
+        static double[,] hdistances;
+        static int[,] hpermutations;
+        static double[] hresults = new double[N_BEES];
+
+        static double bestVal = double.MaxValue;
+        static int[] bestPerm;
+
+        // reprezentacja permutacji:
+        // [1,2,0] oznacza ze:
+        // - zerowy przedmiot stoi na pierwszym miejscu
+        // - pierwszy przedmiot stoi na drugim miejscu
+        // - drugi przedmiot stoi na zerowym miejscu
 
         static void Main(string[] args)
         {
@@ -22,42 +42,54 @@ namespace BeesAlgQAP
                 GPGPU gpu = CudafyHost.GetDevice(CudafyModes.Target, CudafyModes.DeviceId);
                 gpu.LoadModule(km);
 
-                int PROBLEM_SIZE = 5;
-                int N_BEES = 100;
-
-                // reprezentacja permutacji:
-                // [1,2,0] oznacza ze:
-                // - zerowy przedmiot stoi na pierwszym miejscu
-                // - pierwszy przedmiot stoi na drugim miejscu
-                // - drugi przedmiot stoi na zerowym miejscu
-
-                double[,] hweights = new double[PROBLEM_SIZE, PROBLEM_SIZE];    //should be symmetric
-                double[,] hdistances = new double[PROBLEM_SIZE, PROBLEM_SIZE];  //should be symmetric
-                int[,] hpermutations = new int[N_BEES, PROBLEM_SIZE];
-                double[] hresults = new double[N_BEES];
+                ReadValuesFromFile("QAPexample.txt");
 
                 double[,] dweights = gpu.Allocate<double>(PROBLEM_SIZE, PROBLEM_SIZE);
                 double[,] ddistances = gpu.Allocate<double>(PROBLEM_SIZE, PROBLEM_SIZE);
                 int[,] dpermutations = gpu.Allocate<int>(N_BEES, PROBLEM_SIZE);
                 double[] dresults = gpu.Allocate<double>(N_BEES);
 
-                GenerateRandomValues(hweights, hdistances, hpermutations, PROBLEM_SIZE, N_BEES);
-                PrintValues(hweights, hdistances, hpermutations, PROBLEM_SIZE, N_BEES);
-
                 gpu.CopyToDevice(hweights, dweights);
                 gpu.CopyToDevice(hdistances, ddistances);
-                gpu.CopyToDevice(hpermutations, dpermutations);
-                //gpu.CopyToDevice(hresults, dresults);
 
-                gpu.Launch(N_BEES, 1).calcCosts(dweights, ddistances, dpermutations, dresults);
+                //losowa inicjalizacja populacji
+                GenerateRandomPermutations(0, N_BEES);
 
-                gpu.CopyFromDevice(dresults, hresults);
-
-                for (int i = 0; i < N_BEES; i++ )
+                for (int iteration = 0; iteration < ITERATIONS_NUM; iteration++)
                 {
-                    Console.Write("{0}, ", hresults[i]);
+                    gpu.CopyToDevice(hpermutations, dpermutations);
+                    gpu.Launch(N_BEES, 1).calcCosts(dweights, ddistances, dpermutations, dresults);
+                    gpu.CopyFromDevice(dresults, hresults);
+
+                    //posortowanie permutacji wedlug kosztow
+                    hpermutations = GetSortedPermutationsArray(hpermutations, hresults);
+
+                    if(bestVal > hresults[0])
+                    {
+                        //zapamietanie najlepszego rozwiazania
+                        bestVal = hresults[0];
+                        for (int i = 0; i < PROBLEM_SIZE; i++)
+                        {
+                            bestPerm[i] = hpermutations[0, i];
+                        }
+                        PrintResult("New best");
+                    }
+
+                    //dla lepszych rozwiazan losowa zmiana - zamiana dwoch elementow w permutacji
+                    for (int i = 0; i < N_BEST_SOLUTIONS; i++)
+                    {
+                        int ind1 = random.Next(PROBLEM_SIZE);
+                        int ind2 = random.Next(PROBLEM_SIZE);       //TODO zapewnic zeby byly rozne?
+                        int tmp = hpermutations[i, ind1];
+                        hpermutations[i, ind1] = hpermutations[i, ind2];
+                        hpermutations[i, ind2] = tmp;
+                    }
+
+                    //gorsze rozwiazania pomijamy - generujemy nowe losowe permutacje
+                    GenerateRandomPermutations(N_BEST_SOLUTIONS, N_BEES);
                 }
-                Console.WriteLine();
+
+                PrintResult("Best");
 
                 gpu.FreeAll();
             }
@@ -69,23 +101,55 @@ namespace BeesAlgQAP
             Console.ReadKey();
         }
 
-        public static void GenerateRandomValues(double[,] hweights, double[,] hdistances, int[,] hpermutations, int PROBLEM_SIZE, int N_BEES)
+        private static void PrintResult(string str)
         {
-            double val;
+            Console.WriteLine(String.Format(str + " value: {0}", bestVal));
+            Console.Write(str + " permutation: ");
             for (int i = 0; i < PROBLEM_SIZE; i++)
             {
-                for (int j = i; j < PROBLEM_SIZE; j++)
+                Console.Write(String.Format("{0}, ", bestPerm[i]));
+            }
+            Console.WriteLine();
+        }
+
+        private static void ReadValuesFromFile(string filename)
+        {
+            using (StreamReader sr = new StreamReader(filename))
+            {
+                String line = sr.ReadLine();
+                PROBLEM_SIZE = int.Parse(line);
+
+                hweights = new double[PROBLEM_SIZE, PROBLEM_SIZE];
+                hdistances = new double[PROBLEM_SIZE, PROBLEM_SIZE];
+                hpermutations = new int[N_BEES, PROBLEM_SIZE];
+                bestPerm = new int[PROBLEM_SIZE];
+
+                line = sr.ReadLine();
+                for (int i = 0; i < PROBLEM_SIZE; i++)
                 {
-                    val = random.NextDouble();
-                    hweights[i, j] = val;
-                    hweights[j, i] = val;
-                    val = random.NextDouble();
-                    hdistances[i, j] = val;
-                    hdistances[j, i] = val;
+                    line = sr.ReadLine();
+                    string[] splitted = line.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                    for (int j = 0; j < PROBLEM_SIZE; j++)
+                    {
+                        hdistances[i, j] = int.Parse(splitted[j]);      //or hweights?
+                    }
+                }
+                line = sr.ReadLine();
+                for (int i = 0; i < PROBLEM_SIZE; i++)
+                {
+                    line = sr.ReadLine();
+                    string[] splitted = line.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                    for (int j = 0; j < PROBLEM_SIZE; j++)
+                    {
+                        hweights[i, j] = int.Parse(splitted[j]);        //or hdistances?
+                    }
                 }
             }
+        }
 
-            for (int i = 0; i < N_BEES; i++)
+        private static void GenerateRandomPermutations(int begin, int end)
+        {
+            for (int i = begin; i < end; i++)
             {
                 for (int j = 0; j < PROBLEM_SIZE; j++)
                 {
@@ -95,7 +159,7 @@ namespace BeesAlgQAP
             }
         }
 
-        public static void PrintValues(double[,] hweights, double[,] hdistances, int[,] hpermutations, int PROBLEM_SIZE, int N_BEES)
+        public static void PrintValues()
         {
             for (int i = 0; i < PROBLEM_SIZE; i++)
             {
@@ -141,24 +205,42 @@ namespace BeesAlgQAP
             }
         }
 
-        [Cudafy]
-        public static void map(GThread thread, int[] a)
+        static T[][] ToJagged<T>(this T[,] array)
         {
-            int tid = thread.blockIdx.x;
-            if (tid < a.Length)
-                a[tid] = 2 * a[tid];
+            int height = array.GetLength(0), width = array.GetLength(1);
+            T[][] jagged = new T[height][];
+            for (int i = 0; i < height; i++)
+            {
+                T[] row = new T[width];
+                for (int j = 0; j < width; j++)
+                {
+                    row[j] = array[i, j];
+                }
+                jagged[i] = row;
+            }
+            return jagged;
         }
 
-        [Cudafy]
-        public static void addVector(GThread thread, int[] a, int[] b, int[] c)
+        static T[,] ToRectangular<T>(this T[][] array)
         {
-            // Get the id of the thread. addVector is called N times in parallel, so we need 
-            // to know which one we are dealing with.
-            int tid = thread.blockIdx.x;
-            // To prevent reading beyond the end of the array we check that 
-            // the id is less than Length
-            if (tid < a.Length)
-                c[tid] = a[tid] + b[tid];
+            int height = array.Length, width = array[0].Length;
+            T[,] rect = new T[height, width];
+            for (int i = 0; i < height; i++)
+            {
+                T[] row = array[i];
+                for (int j = 0; j < width; j++)
+                {
+                    rect[i, j] = row[j];
+                }
+            }
+            return rect;
+        }
+
+        public static int[,] GetSortedPermutationsArray(int[,] hpermutations, double[] hresults)
+        {
+            int[][] hpermutationsJagged = ToJagged<int>(hpermutations);
+            Array.Sort(hresults, hpermutationsJagged);
+            return ToRectangular<int>(hpermutationsJagged);
         }
 
         [Cudafy]
