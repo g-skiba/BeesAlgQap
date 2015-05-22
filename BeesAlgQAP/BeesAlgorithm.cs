@@ -18,12 +18,17 @@ namespace BeesAlgQAP
         static int N_BEES = 100;
         static int N_BEST_SOLUTIONS = 50;
         static int N_ELITE = 15;
+        static int BEST_NEIGHBOURHOOD_SIZE = 3;
+        static int ELITE_NEIGHBOURHOOD_SIZE = 5;
 
         static int PROBLEM_SIZE;
         static double[,] hweights;
         static double[,] hdistances;
         static int[,] hpermutations;
         static double[] hresults = new double[N_BEES];
+
+        static int[,] hneighbourhoods;
+        static double[] hnresults;
 
         static double bestVal = double.MaxValue;
         static int[] bestPerm;
@@ -100,12 +105,18 @@ namespace BeesAlgQAP
                 GPGPU gpu = CudafyHost.GetDevice(CudafyModes.Target, CudafyModes.DeviceId);
                 gpu.LoadModule(km);
 
-                ReadValuesFromFile("QAPexample.txt");
+                ReadValuesFromFile("QAPexample2.txt");
 
                 double[,] dweights = gpu.Allocate<double>(PROBLEM_SIZE, PROBLEM_SIZE);
                 double[,] ddistances = gpu.Allocate<double>(PROBLEM_SIZE, PROBLEM_SIZE);
                 int[,] dpermutations = gpu.Allocate<int>(N_BEES, PROBLEM_SIZE);
                 double[] dresults = gpu.Allocate<double>(N_BEES);
+
+                int NEIGHBOURHOOD_BEES = N_ELITE * ELITE_NEIGHBOURHOOD_SIZE + N_BEST_SOLUTIONS * BEST_NEIGHBOURHOOD_SIZE;
+                hneighbourhoods = new int[NEIGHBOURHOOD_BEES, PROBLEM_SIZE];
+                hnresults = new double[NEIGHBOURHOOD_BEES];
+                int[,] dneighbourhoods = gpu.Allocate<int>(NEIGHBOURHOOD_BEES, PROBLEM_SIZE);
+                double[] dnresults = gpu.Allocate<double>(NEIGHBOURHOOD_BEES);
 
                 gpu.CopyToDevice(hweights, dweights);
                 gpu.CopyToDevice(hdistances, ddistances);
@@ -135,18 +146,60 @@ namespace BeesAlgQAP
 
                     bestFitnesses[iteration] = bestVal;
 
-                    //dla lepszych rozwiazan losowa zmiana - zamiana dwoch elementow w permutacji
-                    for (int i = 0; i < N_BEST_SOLUTIONS; i++)
+                    //przygotowanie danych do generowania sasiedztwa elity
+                    for (int i = 0; i < N_ELITE; i++)
+                    {
+                        for (int j = 0; j < ELITE_NEIGHBOURHOOD_SIZE; j++)
+                        {
+                            int row_nr = i * ELITE_NEIGHBOURHOOD_SIZE + j;
+                            Array.Copy(hpermutations, i * PROBLEM_SIZE, hneighbourhoods, row_nr * PROBLEM_SIZE, PROBLEM_SIZE);
+                        }
+                    }
+
+                    //przygotowanie danych do generowania sasiedztwa dobrych rozwiazan
+                    for (int i = N_ELITE; i < N_ELITE + N_BEST_SOLUTIONS; i++)
+                    {
+                        for (int j = 0; j < BEST_NEIGHBOURHOOD_SIZE; j++)
+                        {
+                            int row_nr = N_ELITE * ELITE_NEIGHBOURHOOD_SIZE + (i - N_ELITE) * BEST_NEIGHBOURHOOD_SIZE + j;
+                            Array.Copy(hpermutations, i * PROBLEM_SIZE, hneighbourhoods, row_nr * PROBLEM_SIZE, PROBLEM_SIZE);
+                        }
+                    }
+
+                    //wygenerowanie sasiedztw (losowe zamiany w permutacjach)
+                    for (int i = 0; i < N_ELITE * ELITE_NEIGHBOURHOOD_SIZE + N_BEST_SOLUTIONS * BEST_NEIGHBOURHOOD_SIZE; i++)
                     {
                         int ind1 = random.Next(PROBLEM_SIZE);
                         int ind2 = random.Next(PROBLEM_SIZE);       //TODO zapewnic zeby byly rozne?
-                        int tmp = hpermutations[i, ind1];
-                        hpermutations[i, ind1] = hpermutations[i, ind2];
-                        hpermutations[i, ind2] = tmp;
+                        int tmp = hneighbourhoods[i, ind1];
+                        hneighbourhoods[i, ind1] = hneighbourhoods[i, ind2];
+                        hneighbourhoods[i, ind2] = tmp;
+                    }
+
+                    //policz wyniki dla sasiedztw
+                    gpu.CopyToDevice(hneighbourhoods, dneighbourhoods);
+                    gpu.Launch(NEIGHBOURHOOD_BEES, 1).calcCosts(dweights, ddistances, dneighbourhoods, dnresults);
+                    gpu.CopyFromDevice(dnresults, hnresults);
+
+                    //posortuj wyniki dla wszystkich sasiedztw
+                    hneighbourhoods = GetSortedNeibhbourhoodsArray(hneighbourhoods, hnresults);
+
+                    //wybierz najlepsze permutacje z sasiedztw elity
+                    for (int i = 0; i < N_ELITE; i++)
+                    {
+                        int i_n = i * ELITE_NEIGHBOURHOOD_SIZE;
+                        Array.Copy(hneighbourhoods, i_n * PROBLEM_SIZE, hpermutations, i * PROBLEM_SIZE, PROBLEM_SIZE);
+                    }
+
+                    //wybierz najlepsze permutacje z sasiedztw dobrych rozwiazan
+                    for (int i = N_ELITE; i < N_ELITE + N_BEST_SOLUTIONS; i++)
+                    {
+                        int i_n = N_ELITE * ELITE_NEIGHBOURHOOD_SIZE + (i - N_ELITE) * BEST_NEIGHBOURHOOD_SIZE;
+                        Array.Copy(hneighbourhoods, i_n * PROBLEM_SIZE, hpermutations, i * PROBLEM_SIZE, PROBLEM_SIZE);
                     }
 
                     //gorsze rozwiazania pomijamy - generujemy nowe losowe permutacje
-                    GenerateRandomPermutations(N_BEST_SOLUTIONS, N_BEES);
+                    GenerateRandomPermutations(N_ELITE + N_BEST_SOLUTIONS, N_BEES);
                 }
 
                 PrintResult("Best");
@@ -307,6 +360,21 @@ namespace BeesAlgQAP
             return ToRectangular<int>(hpermutationsJagged);
         }
 
+        private static int[,] GetSortedNeibhbourhoodsArray(int[,] hneighbourhoods, double[] hnresults)
+        {
+            int[][] hneighbourhoodsJagged = ToJagged<int>(hneighbourhoods);
+            for (int i = 0; i < N_ELITE; i++)
+            {
+                Array.Sort(hnresults, hneighbourhoodsJagged, i * ELITE_NEIGHBOURHOOD_SIZE, ELITE_NEIGHBOURHOOD_SIZE);
+            }
+
+            for (int i = N_ELITE; i < N_ELITE + N_BEST_SOLUTIONS; i++)
+            {
+                Array.Sort(hnresults, hneighbourhoodsJagged, N_ELITE * ELITE_NEIGHBOURHOOD_SIZE + (i - N_ELITE) * BEST_NEIGHBOURHOOD_SIZE, BEST_NEIGHBOURHOOD_SIZE);
+            }
+            return ToRectangular<int>(hneighbourhoodsJagged);
+        }
+
         [Cudafy]
         public static void calcCosts(GThread thread, double[,] weights, double[,] distances, int[,] permutations, double[] results)
         {
@@ -315,7 +383,8 @@ namespace BeesAlgQAP
             results[tid] = 0;
             for( int x = 0; x < problemSize; x++ )
             {
-                for( int y = x + 1 ; y < problemSize; y++)
+                //for( int y = x + 1 ; y < problemSize; y++)
+                for (int y = 0; y < problemSize; y++ )
                 {
                     results[tid] += weights[x, y] * distances[permutations[tid, x], permutations[tid, y]];
                 }
