@@ -23,11 +23,16 @@ namespace BeesAlgQAP
             bestUpDown.Value = BeesAlgorithm.getBest();
             eliteUpDown.Value = BeesAlgorithm.getElite();
             iterationsUpDown.Value = BeesAlgorithm.getIterations();
+            bestNeiUpDown.Value = BeesAlgorithm.getBestNeighbourhood();
+            eliteNeiUpDown.Value = BeesAlgorithm.getEliteNeighbourhood();
 
             beesUpDown.Minimum = bestUpDown.Value;
             bestUpDown.Maximum = beesUpDown.Value;
             bestUpDown.Minimum = eliteUpDown.Value;
             eliteUpDown.Maximum = bestUpDown.Value;
+
+            bestNeiUpDown.Maximum = eliteNeiUpDown.Value;
+            eliteNeiUpDown.Minimum = bestNeiUpDown.Value;
 
 
             chart1.Series.Clear();
@@ -71,12 +76,24 @@ namespace BeesAlgQAP
         private void eliteUpDown_ValueChanged(object sender, EventArgs e)
         {
             bestUpDown.Minimum = eliteUpDown.Value;
-            BeesAlgorithm.setIElite(Convert.ToInt32(eliteUpDown.Value));
+            BeesAlgorithm.setElite(Convert.ToInt32(eliteUpDown.Value));
         }
 
         private void iterationsUpDown_ValueChanged(object sender, EventArgs e)
         {
             BeesAlgorithm.setIterations(Convert.ToInt32(iterationsUpDown.Value));
+        }
+
+        private void bestNeiUpDown_ValueChanged(object sender, EventArgs e)
+        {
+            eliteNeiUpDown.Minimum = bestNeiUpDown.Value;
+            BeesAlgorithm.setBestNeighbourhood(Convert.ToInt32(bestNeiUpDown.Value));
+        }
+
+        private void eliteNeiUpDown_ValueChanged(object sender, EventArgs e)
+        {
+            bestNeiUpDown.Maximum = eliteNeiUpDown.Value;
+            BeesAlgorithm.setEliteNeighbourhood(Convert.ToInt32(eliteNeiUpDown.Value));
         }
     }
 }

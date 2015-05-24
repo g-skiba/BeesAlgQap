@@ -62,6 +62,16 @@ namespace BeesAlgQAP
             return N_ELITE;
         }
 
+        public static int getBestNeighbourhood()
+        {
+            return BEST_NEIGHBOURHOOD_SIZE;
+        }
+
+        public static int getEliteNeighbourhood()
+        {
+            return ELITE_NEIGHBOURHOOD_SIZE;
+        }
+
         public static void setIterations(int n)
         {
             ITERATIONS_NUM = n;
@@ -77,9 +87,19 @@ namespace BeesAlgQAP
             N_BEST_SOLUTIONS = n;
         }
 
-        public static void setIElite(int n)
+        public static void setElite(int n)
         {
             N_ELITE = n;
+        }
+
+        public static void setBestNeighbourhood(int n)
+        {
+            BEST_NEIGHBOURHOOD_SIZE = n;
+        }
+
+        public static void setEliteNeighbourhood(int n)
+        {
+            ELITE_NEIGHBOURHOOD_SIZE = n;
         }
 
         public static void clear()
@@ -99,6 +119,8 @@ namespace BeesAlgQAP
                 Console.WriteLine("\tBees: " + N_BEES);
                 Console.WriteLine("\tBest: " + N_BEST_SOLUTIONS);
                 Console.WriteLine("\tElite: " + N_ELITE);
+                Console.WriteLine("\tBest neighbourhood: " + BEST_NEIGHBOURHOOD_SIZE);
+                Console.WriteLine("\tElite neighbourhood: " + ELITE_NEIGHBOURHOOD_SIZE);
                 
                 CudafyModule km = CudafyTranslator.Cudafy();
 
