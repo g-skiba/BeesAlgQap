@@ -24,6 +24,7 @@ namespace BeesAlgQAP
         static int PROBLEM_SIZE;
         static double[,] hweights;
         static double[,] hdistances;
+        static double REFERENCE_SOLUTION;
         static int[,] hpermutations;
         static double[] hresults = new double[N_BEES];
 
@@ -263,7 +264,7 @@ namespace BeesAlgQAP
                 hpermutations = new int[N_BEES, PROBLEM_SIZE];
                 bestPerm = new int[PROBLEM_SIZE];
 
-                line = sr.ReadLine();
+                sr.ReadLine();
                 for (int i = 0; i < PROBLEM_SIZE; i++)
                 {
                     line = sr.ReadLine();
@@ -273,7 +274,7 @@ namespace BeesAlgQAP
                         hdistances[i, j] = int.Parse(splitted[j]);      //or hweights?
                     }
                 }
-                line = sr.ReadLine();
+                sr.ReadLine();
                 for (int i = 0; i < PROBLEM_SIZE; i++)
                 {
                     line = sr.ReadLine();
@@ -283,6 +284,9 @@ namespace BeesAlgQAP
                         hweights[i, j] = int.Parse(splitted[j]);        //or hdistances?
                     }
                 }
+                sr.ReadLine();
+                line = sr.ReadLine();
+                REFERENCE_SOLUTION = double.Parse(line);
             }
         }
 
