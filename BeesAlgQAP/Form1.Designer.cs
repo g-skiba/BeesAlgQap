@@ -28,11 +28,15 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea5 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Series series5 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Title title5 = new System.Windows.Forms.DataVisualization.Charting.Title();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Title title1 = new System.Windows.Forms.DataVisualization.Charting.Title();
             this.btnRun = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.eliteNeiUpDown = new System.Windows.Forms.NumericUpDown();
+            this.bestNeiUpDown = new System.Windows.Forms.NumericUpDown();
+            this.label9 = new System.Windows.Forms.Label();
+            this.label8 = new System.Windows.Forms.Label();
             this.iterationsUpDown = new System.Windows.Forms.NumericUpDown();
             this.eliteUpDown = new System.Windows.Forms.NumericUpDown();
             this.bestUpDown = new System.Windows.Forms.NumericUpDown();
@@ -50,19 +54,19 @@
             this.label7 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
-            this.label8 = new System.Windows.Forms.Label();
-            this.label9 = new System.Windows.Forms.Label();
-            this.bestNeiUpDown = new System.Windows.Forms.NumericUpDown();
-            this.eliteNeiUpDown = new System.Windows.Forms.NumericUpDown();
+            this.label10 = new System.Windows.Forms.Label();
+            this.label11 = new System.Windows.Forms.Label();
+            this.referenceLabel = new System.Windows.Forms.Label();
+            this.errorLabel = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.eliteNeiUpDown)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.bestNeiUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.iterationsUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.eliteUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.bestUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.beesUpDown)).BeginInit();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.chart1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.bestNeiUpDown)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.eliteNeiUpDown)).BeginInit();
             this.SuspendLayout();
             // 
             // btnRun
@@ -95,6 +99,45 @@
             this.groupBox1.TabIndex = 1;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "input";
+            // 
+            // eliteNeiUpDown
+            // 
+            this.eliteNeiUpDown.Location = new System.Drawing.Point(497, 57);
+            this.eliteNeiUpDown.Name = "eliteNeiUpDown";
+            this.eliteNeiUpDown.Size = new System.Drawing.Size(120, 20);
+            this.eliteNeiUpDown.TabIndex = 11;
+            this.eliteNeiUpDown.Value = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            this.eliteNeiUpDown.ValueChanged += new System.EventHandler(this.eliteNeiUpDown_ValueChanged);
+            // 
+            // bestNeiUpDown
+            // 
+            this.bestNeiUpDown.Location = new System.Drawing.Point(497, 27);
+            this.bestNeiUpDown.Name = "bestNeiUpDown";
+            this.bestNeiUpDown.Size = new System.Drawing.Size(120, 20);
+            this.bestNeiUpDown.TabIndex = 10;
+            this.bestNeiUpDown.ValueChanged += new System.EventHandler(this.bestNeiUpDown_ValueChanged);
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(347, 64);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(125, 13);
+            this.label9.TabIndex = 9;
+            this.label9.Text = "Elite neighbourhood size:";
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(347, 34);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(126, 13);
+            this.label8.TabIndex = 8;
+            this.label8.Text = "Best neighbourhood size:";
             // 
             // iterationsUpDown
             // 
@@ -182,6 +225,10 @@
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.errorLabel);
+            this.groupBox2.Controls.Add(this.referenceLabel);
+            this.groupBox2.Controls.Add(this.label11);
+            this.groupBox2.Controls.Add(this.label10);
             this.groupBox2.Controls.Add(this.firstLbl);
             this.groupBox2.Controls.Add(this.finalLabel);
             this.groupBox2.Controls.Add(this.firstLabel);
@@ -232,20 +279,20 @@
             // 
             // chart1
             // 
-            chartArea5.Name = "ChartArea1";
-            this.chart1.ChartAreas.Add(chartArea5);
+            chartArea1.Name = "ChartArea1";
+            this.chart1.ChartAreas.Add(chartArea1);
             this.chart1.Location = new System.Drawing.Point(10, 119);
             this.chart1.Name = "chart1";
-            series5.ChartArea = "ChartArea1";
-            series5.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Spline;
-            series5.Name = "Series1";
-            this.chart1.Series.Add(series5);
+            series1.ChartArea = "ChartArea1";
+            series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Spline;
+            series1.Name = "Series1";
+            this.chart1.Series.Add(series1);
             this.chart1.Size = new System.Drawing.Size(640, 217);
             this.chart1.TabIndex = 3;
             this.chart1.Text = "chart1";
-            title5.Name = "Title1";
-            title5.Text = "Fitness(iteration)";
-            this.chart1.Titles.Add(title5);
+            title1.Name = "Title1";
+            title1.Text = "Fitness(iteration)";
+            this.chart1.Titles.Add(title1);
             // 
             // label7
             // 
@@ -275,44 +322,40 @@
             this.label5.Text = "First solution fitness:";
             this.label5.Click += new System.EventHandler(this.label5_Click);
             // 
-            // label8
+            // label10
             // 
-            this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(347, 34);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(126, 13);
-            this.label8.TabIndex = 8;
-            this.label8.Text = "Best neighbourhood size:";
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(261, 63);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(132, 13);
+            this.label10.TabIndex = 10;
+            this.label10.Text = "Reference solution fitness:";
             // 
-            // label9
+            // label11
             // 
-            this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(347, 64);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(125, 13);
-            this.label9.TabIndex = 9;
-            this.label9.Text = "Elite neighbourhood size:";
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(261, 86);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(32, 13);
+            this.label11.TabIndex = 11;
+            this.label11.Text = "Error:";
+            this.label11.Click += new System.EventHandler(this.label11_Click);
             // 
-            // bestNeiUpDown
+            // referenceLabel
             // 
-            this.bestNeiUpDown.Location = new System.Drawing.Point(497, 27);
-            this.bestNeiUpDown.Name = "bestNeiUpDown";
-            this.bestNeiUpDown.Size = new System.Drawing.Size(120, 20);
-            this.bestNeiUpDown.TabIndex = 10;
-            this.bestNeiUpDown.ValueChanged += new System.EventHandler(this.bestNeiUpDown_ValueChanged);
+            this.referenceLabel.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.referenceLabel.Location = new System.Drawing.Point(416, 53);
+            this.referenceLabel.Name = "referenceLabel";
+            this.referenceLabel.Size = new System.Drawing.Size(100, 23);
+            this.referenceLabel.TabIndex = 12;
             // 
-            // eliteNeiUpDown
+            // errorLabel
             // 
-            this.eliteNeiUpDown.Location = new System.Drawing.Point(497, 57);
-            this.eliteNeiUpDown.Name = "eliteNeiUpDown";
-            this.eliteNeiUpDown.Size = new System.Drawing.Size(120, 20);
-            this.eliteNeiUpDown.TabIndex = 11;
-            this.eliteNeiUpDown.Value = new decimal(new int[] {
-            10,
-            0,
-            0,
-            0});
-            this.eliteNeiUpDown.ValueChanged += new System.EventHandler(this.eliteNeiUpDown_ValueChanged);
+            this.errorLabel.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.errorLabel.Location = new System.Drawing.Point(416, 76);
+            this.errorLabel.Name = "errorLabel";
+            this.errorLabel.Size = new System.Drawing.Size(100, 23);
+            this.errorLabel.TabIndex = 14;
             // 
             // Form1
             // 
@@ -326,6 +369,8 @@
             this.Text = "BEES QAP";
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.eliteNeiUpDown)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.bestNeiUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.iterationsUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.eliteUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.bestUpDown)).EndInit();
@@ -333,8 +378,6 @@
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.chart1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.bestNeiUpDown)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.eliteNeiUpDown)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -364,5 +407,9 @@
         private System.Windows.Forms.NumericUpDown bestNeiUpDown;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.Label errorLabel;
+        private System.Windows.Forms.Label referenceLabel;
     }
 }

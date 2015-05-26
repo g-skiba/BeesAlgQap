@@ -11,14 +11,16 @@ namespace BeesAlgQAP
 {
     class CallbackFields
     {
-        private Label first, final, improvement;
+        private Label first, final, improvement, reference, error;
         private Chart chart;
 
-        public CallbackFields(Label first, Label final, Label improvement, Chart chart)
+        public CallbackFields(Label first, Label final, Label improvement, Label reference, Label error, Chart chart)
         {
             this.first = first;
             this.final = final;
             this.improvement = improvement;
+            this.reference = reference;
+            this.error = error;
             this.chart = chart;
         }
 
@@ -32,9 +34,19 @@ namespace BeesAlgQAP
             final.Text = Convert.ToString(n);
         }
 
-        public void setIMprovementValue(double n)
+        public void setImprovementValue(double n)
         {
             improvement.Text = n.ToString("0.00") + " %";
+        }
+
+        public void setReferenceSolution(double n)
+        {
+            reference.Text = Convert.ToString(n);
+        }
+
+        public void setError(double n)
+        {
+            error.Text = n.ToString("0.00") + " %";
         }
 
         public void setDatapoints(double[] array)

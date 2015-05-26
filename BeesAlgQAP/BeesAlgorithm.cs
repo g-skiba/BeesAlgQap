@@ -229,8 +229,10 @@ namespace BeesAlgQAP
 
                 callback.setFirstValue(bestFitnesses[0]);
                 callback.setFinalValue(bestFitnesses[ITERATIONS_NUM - 1]);
-                callback.setIMprovementValue((bestFitnesses[0] - bestFitnesses[ITERATIONS_NUM -1])/bestFitnesses[0] * 100.0);
+                callback.setImprovementValue((bestFitnesses[0] - bestFitnesses[ITERATIONS_NUM -1])/bestFitnesses[0] * 100.0);
                 callback.setDatapoints(bestFitnesses);
+                callback.setReferenceSolution(REFERENCE_SOLUTION);
+                callback.setError(Math.Abs(bestFitnesses[ITERATIONS_NUM - 1] - REFERENCE_SOLUTION) / REFERENCE_SOLUTION);
 
                 gpu.FreeAll();
             }

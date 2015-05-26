@@ -37,7 +37,7 @@ namespace BeesAlgQAP
 
             chart1.Series.Clear();
             
-            callbacks = new CallbackFields(firstLabel, finalLabel, improvementLabel, chart1);
+            callbacks = new CallbackFields(firstLabel, finalLabel, improvementLabel, referenceLabel, errorLabel, chart1);
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -94,6 +94,11 @@ namespace BeesAlgQAP
         {
             bestNeiUpDown.Maximum = eliteNeiUpDown.Value;
             BeesAlgorithm.setEliteNeighbourhood(Convert.ToInt32(eliteNeiUpDown.Value));
+        }
+
+        private void label11_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
