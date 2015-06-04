@@ -25,6 +25,7 @@ namespace BeesAlgQAP
             iterationsUpDown.Value = BeesAlgorithm.getIterations();
             bestNeiUpDown.Value = BeesAlgorithm.getBestNeighbourhood();
             eliteNeiUpDown.Value = BeesAlgorithm.getEliteNeighbourhood();
+            seedCheck.Checked = BeesAlgorithm.getSeedSaving();
 
             beesUpDown.Minimum = bestUpDown.Value;
             bestUpDown.Maximum = beesUpDown.Value;
@@ -99,6 +100,11 @@ namespace BeesAlgQAP
         private void label11_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void seedCheck_CheckedChanged(object sender, EventArgs e)
+        {
+            BeesAlgorithm.setSeedSaving(seedCheck.Checked);
         }
     }
 }

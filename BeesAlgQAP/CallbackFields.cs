@@ -49,18 +49,25 @@ namespace BeesAlgQAP
             error.Text = n.ToString("0.00") + " %";
         }
 
-        public void setDatapoints(double[] array)
+        public void setDatapoints(double[] bestSolution, double[] maxOfIteration)
         {
             chart.Series.Clear();
             chart.Series.Add("Series1");
             chart.Series["Series1"].ChartType = SeriesChartType.Spline;
             chart.Series["Series1"].Color = Color.Red;
 
-            for(int i = 0 ; i < array.Length ; i++)
+            chart.Series.Add("Series2");
+            chart.Series["Series2"].ChartType = SeriesChartType.Spline;
+            chart.Series["Series2"].Color = Color.Blue;
+
+            for (int i = 0; i < bestSolution.Length; i++)
             {
-                chart.Series["Series1"].Points.AddXY(Convert.ToDouble(i + 1), array[i]);
+                chart.Series["Series1"].Points.AddXY(Convert.ToDouble(i + 1), bestSolution[i]);
+                chart.Series["Series2"].Points.AddXY(Convert.ToDouble(i + 1), maxOfIteration[i]);
             }
-     
+
+            chart.ChartAreas[0].AxisY.Minimum = bestSolution[bestSolution.Length - 1] * 0.99;
+            chart.ChartAreas[0].AxisY.Maximum = bestSolution[0] * 1.01;
             chart.Update();
         }
     }

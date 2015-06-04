@@ -28,9 +28,9 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Title title1 = new System.Windows.Forms.DataVisualization.Charting.Title();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Title title2 = new System.Windows.Forms.DataVisualization.Charting.Title();
             this.btnRun = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.eliteNeiUpDown = new System.Windows.Forms.NumericUpDown();
@@ -46,6 +46,10 @@
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.errorLabel = new System.Windows.Forms.Label();
+            this.referenceLabel = new System.Windows.Forms.Label();
+            this.label11 = new System.Windows.Forms.Label();
+            this.label10 = new System.Windows.Forms.Label();
             this.firstLbl = new System.Windows.Forms.Label();
             this.finalLabel = new System.Windows.Forms.Label();
             this.firstLabel = new System.Windows.Forms.Label();
@@ -54,10 +58,7 @@
             this.label7 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
-            this.label10 = new System.Windows.Forms.Label();
-            this.label11 = new System.Windows.Forms.Label();
-            this.referenceLabel = new System.Windows.Forms.Label();
-            this.errorLabel = new System.Windows.Forms.Label();
+            this.seedCheck = new System.Windows.Forms.CheckBox();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.eliteNeiUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.bestNeiUpDown)).BeginInit();
@@ -81,6 +82,7 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.seedCheck);
             this.groupBox1.Controls.Add(this.eliteNeiUpDown);
             this.groupBox1.Controls.Add(this.bestNeiUpDown);
             this.groupBox1.Controls.Add(this.label9);
@@ -103,6 +105,11 @@
             // eliteNeiUpDown
             // 
             this.eliteNeiUpDown.Location = new System.Drawing.Point(497, 57);
+            this.eliteNeiUpDown.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
             this.eliteNeiUpDown.Name = "eliteNeiUpDown";
             this.eliteNeiUpDown.Size = new System.Drawing.Size(120, 20);
             this.eliteNeiUpDown.TabIndex = 11;
@@ -116,9 +123,19 @@
             // bestNeiUpDown
             // 
             this.bestNeiUpDown.Location = new System.Drawing.Point(497, 27);
+            this.bestNeiUpDown.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
             this.bestNeiUpDown.Name = "bestNeiUpDown";
             this.bestNeiUpDown.Size = new System.Drawing.Size(120, 20);
             this.bestNeiUpDown.TabIndex = 10;
+            this.bestNeiUpDown.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
             this.bestNeiUpDown.ValueChanged += new System.EventHandler(this.bestNeiUpDown_ValueChanged);
             // 
             // label9
@@ -143,7 +160,7 @@
             // 
             this.iterationsUpDown.Location = new System.Drawing.Point(171, 121);
             this.iterationsUpDown.Maximum = new decimal(new int[] {
-            300,
+            1000,
             0,
             0,
             0});
@@ -165,25 +182,55 @@
             // eliteUpDown
             // 
             this.eliteUpDown.Location = new System.Drawing.Point(171, 88);
+            this.eliteUpDown.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
             this.eliteUpDown.Name = "eliteUpDown";
             this.eliteUpDown.Size = new System.Drawing.Size(120, 20);
             this.eliteUpDown.TabIndex = 6;
+            this.eliteUpDown.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
             this.eliteUpDown.ValueChanged += new System.EventHandler(this.eliteUpDown_ValueChanged);
             // 
             // bestUpDown
             // 
             this.bestUpDown.Location = new System.Drawing.Point(171, 56);
+            this.bestUpDown.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
             this.bestUpDown.Name = "bestUpDown";
             this.bestUpDown.Size = new System.Drawing.Size(120, 20);
             this.bestUpDown.TabIndex = 5;
+            this.bestUpDown.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
             this.bestUpDown.ValueChanged += new System.EventHandler(this.bestUpDown_ValueChanged);
             // 
             // beesUpDown
             // 
             this.beesUpDown.Location = new System.Drawing.Point(171, 26);
+            this.beesUpDown.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
             this.beesUpDown.Name = "beesUpDown";
             this.beesUpDown.Size = new System.Drawing.Size(120, 20);
             this.beesUpDown.TabIndex = 4;
+            this.beesUpDown.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
             this.beesUpDown.ValueChanged += new System.EventHandler(this.beesUpDown_ValueChanged);
             // 
             // label4
@@ -245,6 +292,41 @@
             this.groupBox2.Text = "output";
             this.groupBox2.Enter += new System.EventHandler(this.groupBox2_Enter);
             // 
+            // errorLabel
+            // 
+            this.errorLabel.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.errorLabel.Location = new System.Drawing.Point(416, 76);
+            this.errorLabel.Name = "errorLabel";
+            this.errorLabel.Size = new System.Drawing.Size(100, 23);
+            this.errorLabel.TabIndex = 14;
+            // 
+            // referenceLabel
+            // 
+            this.referenceLabel.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.referenceLabel.Location = new System.Drawing.Point(416, 53);
+            this.referenceLabel.Name = "referenceLabel";
+            this.referenceLabel.Size = new System.Drawing.Size(100, 23);
+            this.referenceLabel.TabIndex = 12;
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(261, 86);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(32, 13);
+            this.label11.TabIndex = 11;
+            this.label11.Text = "Error:";
+            this.label11.Click += new System.EventHandler(this.label11_Click);
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(261, 63);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(132, 13);
+            this.label10.TabIndex = 10;
+            this.label10.Text = "Reference solution fitness:";
+            // 
             // firstLbl
             // 
             this.firstLbl.AutoSize = true;
@@ -279,20 +361,21 @@
             // 
             // chart1
             // 
-            chartArea1.Name = "ChartArea1";
-            this.chart1.ChartAreas.Add(chartArea1);
+            chartArea2.Name = "ChartArea1";
+            this.chart1.ChartAreas.Add(chartArea2);
             this.chart1.Location = new System.Drawing.Point(10, 119);
             this.chart1.Name = "chart1";
-            series1.ChartArea = "ChartArea1";
-            series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Spline;
-            series1.Name = "Series1";
-            this.chart1.Series.Add(series1);
+            series2.ChartArea = "ChartArea1";
+            series2.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Spline;
+            series2.Legend = "Legend1";
+            series2.Name = "Series1";
+            this.chart1.Series.Add(series2);
             this.chart1.Size = new System.Drawing.Size(640, 217);
             this.chart1.TabIndex = 3;
             this.chart1.Text = "chart1";
-            title1.Name = "Title1";
-            title1.Text = "Fitness(iteration)";
-            this.chart1.Titles.Add(title1);
+            title2.Name = "Title1";
+            title2.Text = "Fitness(iteration)";
+            this.chart1.Titles.Add(title2);
             // 
             // label7
             // 
@@ -322,40 +405,16 @@
             this.label5.Text = "First solution fitness:";
             this.label5.Click += new System.EventHandler(this.label5_Click);
             // 
-            // label10
+            // seedCheck
             // 
-            this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(261, 63);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(132, 13);
-            this.label10.TabIndex = 10;
-            this.label10.Text = "Reference solution fitness:";
-            // 
-            // label11
-            // 
-            this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(261, 86);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(32, 13);
-            this.label11.TabIndex = 11;
-            this.label11.Text = "Error:";
-            this.label11.Click += new System.EventHandler(this.label11_Click);
-            // 
-            // referenceLabel
-            // 
-            this.referenceLabel.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.referenceLabel.Location = new System.Drawing.Point(416, 53);
-            this.referenceLabel.Name = "referenceLabel";
-            this.referenceLabel.Size = new System.Drawing.Size(100, 23);
-            this.referenceLabel.TabIndex = 12;
-            // 
-            // errorLabel
-            // 
-            this.errorLabel.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.errorLabel.Location = new System.Drawing.Point(416, 76);
-            this.errorLabel.Name = "errorLabel";
-            this.errorLabel.Size = new System.Drawing.Size(100, 23);
-            this.errorLabel.TabIndex = 14;
+            this.seedCheck.AutoSize = true;
+            this.seedCheck.Location = new System.Drawing.Point(497, 95);
+            this.seedCheck.Name = "seedCheck";
+            this.seedCheck.Size = new System.Drawing.Size(114, 17);
+            this.seedCheck.TabIndex = 12;
+            this.seedCheck.Text = "Use previous seed";
+            this.seedCheck.UseVisualStyleBackColor = true;
+            this.seedCheck.CheckedChanged += new System.EventHandler(this.seedCheck_CheckedChanged);
             // 
             // Form1
             // 
@@ -411,5 +470,6 @@
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.Label errorLabel;
         private System.Windows.Forms.Label referenceLabel;
+        private System.Windows.Forms.CheckBox seedCheck;
     }
 }

@@ -12,8 +12,11 @@ namespace BeesAlgQAP
 {
     static class BeesAlgorithm
     {
-        public static Random random = new Random();
 
+        public static int seed = System.DateTime.Now.Millisecond;
+        public static Random random = new Random(seed);
+
+        public static bool usePreviousSeed = false;
         static int ITERATIONS_NUM = 100;
         static int N_BEES = 100;
         static int N_BEST_SOLUTIONS = 50;
@@ -35,6 +38,7 @@ namespace BeesAlgQAP
         static int[] bestPerm;
 
         static double[] bestFitnesses = new double[ITERATIONS_NUM];
+        static double[] maxOfIteration = new double[ITERATIONS_NUM];
 
         // reprezentacja permutacji:
         // [1,2,0] oznacza ze:
@@ -103,11 +107,27 @@ namespace BeesAlgQAP
             ELITE_NEIGHBOURHOOD_SIZE = n;
         }
 
+        public static bool getSeedSaving()
+        {
+            return usePreviousSeed;
+        }
+
+        public static void setSeedSaving(bool value)
+        {
+            usePreviousSeed = value;
+        }
+
         public static void clear()
         {
             hresults = new double[N_BEES];
             bestFitnesses = new double[ITERATIONS_NUM];
+            maxOfIteration = new double[ITERATIONS_NUM];
             bestVal = double.MaxValue;
+            if (!usePreviousSeed)
+            {
+                seed = System.DateTime.Now.Millisecond;
+            }
+            random = new Random(seed);
         }
 
         public static void perform(CallbackFields callback)
@@ -122,6 +142,7 @@ namespace BeesAlgQAP
                 Console.WriteLine("\tElite: " + N_ELITE);
                 Console.WriteLine("\tBest neighbourhood: " + BEST_NEIGHBOURHOOD_SIZE);
                 Console.WriteLine("\tElite neighbourhood: " + ELITE_NEIGHBOURHOOD_SIZE);
+                Console.WriteLine("\tSeed: " + seed);
                 
                 CudafyModule km = CudafyTranslator.Cudafy();
 
@@ -155,6 +176,8 @@ namespace BeesAlgQAP
 
                     //posortowanie permutacji wedlug kosztow
                     hpermutations = GetSortedPermutationsArray(hpermutations, hresults);
+
+                    maxOfIteration[iteration] = hresults[0];
 
                     if(bestVal > hresults[0])
                     {
@@ -230,9 +253,9 @@ namespace BeesAlgQAP
                 callback.setFirstValue(bestFitnesses[0]);
                 callback.setFinalValue(bestFitnesses[ITERATIONS_NUM - 1]);
                 callback.setImprovementValue((bestFitnesses[0] - bestFitnesses[ITERATIONS_NUM -1])/bestFitnesses[0] * 100.0);
-                callback.setDatapoints(bestFitnesses);
+                callback.setDatapoints(bestFitnesses, maxOfIteration);
                 callback.setReferenceSolution(REFERENCE_SOLUTION);
-                callback.setError(Math.Abs(bestFitnesses[ITERATIONS_NUM - 1] - REFERENCE_SOLUTION) / REFERENCE_SOLUTION);
+                callback.setError(Math.Abs(bestFitnesses[ITERATIONS_NUM - 1] - REFERENCE_SOLUTION) / REFERENCE_SOLUTION * 100.0);
 
                 gpu.FreeAll();
             }
